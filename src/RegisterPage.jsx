@@ -21,7 +21,7 @@ export default function RegisterPage({ onRegister, onSwitchToLogin }) {
         setLoading(true);
 
         try {
-            const response = await fetch('https://172.20.10.2:3000/graphql', {
+            const response = await fetch('https://orthomedapp.onrender.com/graphql', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

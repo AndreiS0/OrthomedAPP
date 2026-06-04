@@ -28,7 +28,7 @@ export const offlineManager = {
 
         for (let item of queue) {
             try {
-                let url = 'https://172.20.10.2:3000/api/appointments';
+                let url = 'https://orthomedapp.onrender.com/api/appointments';
                 if (item.action === 'PUT' || item.action === 'DELETE') {
                     url += `/${item.data.id}`;
                 }

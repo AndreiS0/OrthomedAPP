@@ -13,7 +13,7 @@ export default function ChatWidget() {
 
     useEffect(() => {
         // Ne conectăm la WebSockets
-        socketRef.current = io('https://172.20.10.2:3000');
+        socketRef.current = io('https://orthomedapp.onrender.com');
 
         // Cerem istoricul mesajelor când ne conectăm
         socketRef.current.emit('request-message-history');

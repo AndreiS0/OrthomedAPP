@@ -12,7 +12,7 @@ import { ApolloClient, InMemoryCache, gql, createHttpLink } from '@apollo/client
 import { setContext } from '@apollo/client/link/context';
 
 const httpLink = createHttpLink({
-    uri: 'https://172.20.10.2:3000/graphql',
+    uri: 'https://orthomedapp.onrender.com/graphql',
 });
 
 
@@ -133,7 +133,7 @@ export default function MasterView({ onLogout }) {
     }, []);
 
     useEffect(() => {
-        const socket = io('https://172.20.10.2:3000');
+        const socket = io('https://orthomedapp.onrender.com');
         socket.on('new-appointment', fetchGraphQLData);
         return () => socket.disconnect();
     }, []);
@@ -156,7 +156,7 @@ export default function MasterView({ onLogout }) {
         if (isOffline) return alert("Cannot use faker while offline");
         const endpoint = isFakerRunning ? '/api/faker/stop' : '/api/faker/start';
         try {
-            await fetch(`https://172.20.10.2:3000${endpoint}`, { method: 'POST' });
+            await fetch(`https://orthomedapp.onrender.com${endpoint}`, { method: 'POST' });
             setIsFakerRunning(!isFakerRunning);
         } catch (error) { console.error("Error:", error); }
     };

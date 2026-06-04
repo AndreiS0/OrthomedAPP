@@ -16,7 +16,7 @@ export default function LoginPage({ onLogin, onSwitchToRegister }) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const response = await fetch('https://172.20.10.2:3000/graphql', {
+            const response = await fetch('https://orthomedapp.onrender.com/graphql', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -58,7 +58,7 @@ export default function LoginPage({ onLogin, onSwitchToRegister }) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const response = await fetch('https://172.20.10.2:3000/graphql', {
+            const response = await fetch('https://orthomedapp.onrender.com/graphql', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -93,7 +93,7 @@ export default function LoginPage({ onLogin, onSwitchToRegister }) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const response = await fetch('https://172.20.10.2:3000/graphql', {
+            const response = await fetch('https://orthomedapp.onrender.com/graphql', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -115,7 +115,7 @@ export default function LoginPage({ onLogin, onSwitchToRegister }) {
         e.preventDefault();
         setErrorMessage('');
         try {
-            const response = await fetch('https://172.20.10.2:3000/graphql', {
+            const response = await fetch('https://orthomedapp.onrender.com/graphql', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -1,6 +1,5 @@
 import express from 'express';
 import http from 'http';
-import fs from 'fs';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import { faker } from '@faker-js/faker';
@@ -16,16 +15,16 @@ const prisma = new PrismaClient();
 const app = express();
 const JWT_SECRET = process.env.JWT_SECRET || "orthomed_secret_key_super_safe_2026";
 
-
-const httpsServer = https.createServer(credentials, app);
-const io = new Server(httpsServer, { cors: { origin: "*" } });
+// HTTP Config (FĂRĂ CERTIFICATE LOCALE - PREGĂTIT PENTRU RENDER)
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, { cors: { origin: "*" } });
 
 // ================= EMAIL CONFIG (2FA) =================
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-        user: 'andreisilaghi6@gmail.com', // <-- PUNE MAILUL TĂU AICI
-        pass: 'chdaebobmsghxvoh'   // <-- PUNE PAROLA GALBENĂ AICI
+        user: 'andreisilaghi6@gmail.com',
+        pass: 'chdaebobmsghxvoh'
     }
 });
 // ======================================================
@@ -38,7 +37,7 @@ app.use(cors({
 
 app.use(express.json());
 
-const MONGO_URI = "mongodb+srv://admin:salut123@cluster0.15v47ie.mongodb.net/?appName=Cluster0";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://admin:salut123@cluster0.15v47ie.mongodb.net/Orthomed?retryWrites=true&w=majority";
 mongoose.connect(MONGO_URI)
     .then(() => console.log('🍃 Connected to MongoDB'))
     .catch(err => console.error('Error connecting to MongoDB:', err));
@@ -114,12 +113,12 @@ const resolvers = {
 
     Mutation: {
         addPatient: async (_, { name, phone }, context) => {
-            checkAuth(context); // Verificăm token-ul
+            checkAuth(context);
             await logActionAndDetect(context.user.username, context.user.role, `ADD_PATIENT: ${name}`);
             return await prisma.patient.create({ data: { name, phone } });
         },
         addAppointment: async (_, { patientId, date, part, status }, context) => {
-            checkAuth(context); // Verificăm token-ul
+            checkAuth(context);
             await logActionAndDetect(context.user.username, context.user.role, `ADD_APPOINTMENT for PATIENT: ${patientId}`);
             const newApp = await prisma.appointment.create({ data: { patientId, date, part, status: status || 'Pending' }, include: { patient: true } });
             io.emit('new-appointment', newApp);
@@ -135,7 +134,6 @@ const resolvers = {
             const valid = await bcrypt.compare(password, user.password);
             if (!valid) throw new Error("Invalid credentials!");
 
-            // Generăm direct token-ul de acces, fără să mai trimitem cod pe mail
             const token = jwt.sign(
                 { userId: user.id, username: user.username, role: user.role.name },
                 JWT_SECRET,
@@ -144,7 +142,6 @@ const resolvers = {
 
             console.log(`🔑 Login Direct Success! Token generated for: ${user.username}`);
 
-            // Returnăm userul cu requires2FA setat pe false ca să sară de fereastra de cod
             return { ...user, token, requires2FA: false, message: "Login successful" };
         },
         verify2FA: async (_, { username, code }) => {
@@ -231,11 +228,9 @@ app.post('/api/faker/start', (req, res) => {
                 data: { name: faker.person.fullName(), phone: faker.phone.number() }
             });
             const parts = ['Spine', 'Left Knee', 'Right Shoulder', 'Neck', 'Right Ankle'];
-            // REPARAT: Folosim doar statusurile originale solicitate
             const statuses = ['Pending', 'Confirmed', 'Canceled'];
 
-            // REPARAT: Generăm date pe mai multe luni ale anului 2026
-            const randomMonth = Math.floor(Math.random() * 8) + 5; // Generează luni între Mai (05) și Decembrie (12)
+            const randomMonth = Math.floor(Math.random() * 8) + 5;
             const randomDay = Math.floor(Math.random() * 28) + 1;
             const paddedMonth = randomMonth.toString().padStart(2, '0');
             const paddedDay = randomDay.toString().padStart(2, '0');

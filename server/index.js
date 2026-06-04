@@ -14,7 +14,7 @@ import nodemailer from 'nodemailer';
 
 const prisma = new PrismaClient();
 const app = express();
-const JWT_SECRET = "super_secret_key_orthomed";
+const JWT_SECRET = process.env.JWT_SECRET || "orthomed_secret_key_super_safe_2026";
 
 
 const httpsServer = https.createServer(credentials, app);

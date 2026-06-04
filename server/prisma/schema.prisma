@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Entitatea 1: Pacientul
+model Patient {
+  id           String        @id @default(uuid())
+  name         String
+  phone        String?
+  // Relația 1-to-Many către Programări
+  appointments Appointment[]
+}
+
+// Entitatea 2: Programarea
+model Appointment {
+  id        String   @id @default(uuid())
+  date      String
+  part      String
+  status    String   @default("Pending")
+
+  // Aici facem legătura (Foreign Key) către Pacient
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+// --- SILVER CHALLENGE: Users, Roles & Permissions ---
+model User {
+  id       String  @id @default(uuid())
+  username String  @unique
+  email    String? @unique // Adăugăm email (cu ? ca să nu strice conturile deja create ca "admin")
+  password String
+
+  roleId   String
+  role     Role    @relation(fields: [roleId], references: [id])
+   twoFactorCode    String?
+    resetToken       String?
+}
+model Role {
+  id          String       @id @default(uuid())
+  name        String       @unique // ex: "Admin" sau "Normal User"
+
+  users       User[]
+  permissions Permission[] // Relație Many-to-Many cu Permisiunile
+}
+
+model Permission {
+  id     String @id @default(uuid())
+  action String @unique // ex: "FULL_ACCESS", "RESTRICTED_ACCESS"
+
+  roles  Role[]
+}
+// --- GOLD CHALLENGE: Logging & Observation List ---
+
+model ActionLog {
+  id        String   @id @default(uuid())
+  userId    String   // Numele sau ID-ul utilizatorului
+  role      String   // Admin sau Normal User
+  action    String   // Ex: "ADD_APPOINTMENT" sau "DELETE_APPOINTMENT"
+  timestamp DateTime @default(now())
+}
+
+model ObservationList {
+  id        String   @id @default(uuid())
+  userId    String   @unique // Cine e suspectul
+  reason    String   // De ce a fost băgat aici (Ex: "Incercare de stergere neautorizata")
+  timestamp DateTime @default(now())
+}
